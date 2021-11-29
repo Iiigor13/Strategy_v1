@@ -3,61 +3,67 @@ using System;
 
 public class CubePlace : MonoBehaviour
 {
-	private Renderer	_rend;			/* Рендер материала для CubeToPlace */
-	private bool		_canBuild;		/* Признак того, что можно строить */
-	private int			_creationFrame;	/* Номер кадра, когда был создан объект */
+	private Renderer	_rend;
+	private bool		_canBuild = true;
 	
-	public GameObject	cubes;			/* Ссылка на родительский объект для новых кубов */
-	public GameObject	pfCube;			/* Префаб для новых кубов */
+	public GameObject	cubes;		/* Ссылка на родительский объект для новых кубов */
+	public GameObject	pfCube;		/* Префаб для новых кубов */
 	
 	
 	private void Start()
 	{
-		_canBuild = true;
-		_creationFrame = 0;
 		_rend = GetComponent<Renderer> ();
+		
+		GameController.leftMouseButtonDown	+= Spawn;
+		GameController.cursorOnPlane		+= Show;
+		GameController.cursorOutOfPlane		+= Enable;
 	}
 	
-	private void Update()
+	
+	private void Show(Vector3 worldPosition)
 	{
-		_rend.enabled = GameController.mouseOnScreen;
-		CubeMovement(GameController.worldPosition);
-		
-		if	(Input.GetMouseButtonDown(0)			&&
-			(Time.frameCount - _creationFrame > 70)	&&
-			GameController.mouseOnScreen			&&
-			_canBuild)
+		_rend.enabled	= true;
+		Movement(worldPosition);
+	}
+	
+	
+	private void Enable()
+	{
+		_rend.enabled	= false;
+	}
+	
+	
+	private void Spawn()
+	{
+		if (_rend.isVisible && _canBuild)
 		{
-			_creationFrame		= Time.frameCount;	/* Фиксация кадра, в котором был создан объект */
 			Instantiate(pfCube, transform.position, Quaternion.identity, cubes.transform);
 		}
 	}
 	
-	/* Метод, вызываемый при соприкосновении с другим объектом */
-	private void OnCollisionEnter(Collision collision)
+	
+	private void OnTriggerStay(Collider collider)
 	{
 		_rend.material.color	= Color.red;
 		_canBuild				= false;
 	}
 	
-	/* Метод, вызываемый при прекращении соприкосновения с другим объектом */
-	private void OnCollisionExit(Collision collision)
+	
+	private void OnTriggerExit(Collider collider)
 	{
 		_rend.material.color	= Color.green;
 		_canBuild				= true;
 	}
 	
-	public void CubeMovement(Vector3 cubePosition)
+	
+	private void Movement(Vector3 position)
 	{
-		Vector3 pos;
+		Vector3 resultPosition;
 		
-		pos.x = (float)Math.Round(cubePosition.x);
-		pos.y = (float)Math.Round(cubePosition.y);
-		pos.z = (float)Math.Round(cubePosition.z);
+		resultPosition.x = (float)Math.Round(position.x);
+		resultPosition.y = (float)Math.Round(position.y);
+		resultPosition.z = (float)Math.Round(position.z);
 		
-		transform.position = pos;
+		transform.position = resultPosition;
 	}
 }
-
-
-	

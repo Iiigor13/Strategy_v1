@@ -2,47 +2,61 @@ using UnityEngine;
 
 public class MoveCamera : MonoBehaviour
 {
-	public	float		speed = 0.05f;	/* Скорость движения камеры */
-	private	Transform	_move;			/* Переменная для операций с типом Transform */
+	private	Transform	_move;
+	public	float		speed = 0.05f;
 	
-	/* Метод старта игры */
+	
 	private void Start()
 	{
 		_move = GetComponent<Transform>();
+		
+		GameController.GetKey_d	+= MoveRight;
+		GameController.GetKey_a	+= MoveLeft;
+		GameController.GetKey_w	+= MoveForward;
+		GameController.GetKey_s	+= MoveBackwards;
 	}
 	
-	/* Метод для изменений в процессе игры */
-	private void Update()
+	
+	private void MoveRight()
 	{
-		Vector3		NowPos = transform.position;	/* Вектор, содержащий текущее положение камеры */
-		Quaternion	NowRot = transform.rotation;	/* Кватернион, содержащий текущие углы камеры */
-		float		x, y, z;						/* Переменные для записи нового положения камеры */
+		Vector3		position = transform.position;
+		Quaternion	rotation = transform.rotation;
 		
-		/* Запись координат текущего полоения камеры в переменные */
-		x = NowPos.x;
-		y = NowPos.y;
-		z = NowPos.z;
+		position.x += speed;
 		
-		if (Input.GetKey("d"))
-		{
-			x = x + speed;
-		}
+		_move.SetPositionAndRotation(position, rotation);
+	}
+	
+	
+	private void MoveLeft()
+	{
+		Vector3		position = transform.position;
+		Quaternion	rotation = transform.rotation;
 		
-		if (Input.GetKey("a"))
-		{
-			x = x - speed;
-		}
+		position.x -= speed;
 		
-		if (Input.GetKey("w"))
-		{
-			z = z + speed;
-		}
+		_move.SetPositionAndRotation(position, rotation);
+	}
+	
+	
+	private void MoveForward()
+	{
+		Vector3		position = transform.position;
+		Quaternion	rotation = transform.rotation;
 		
-		if (Input.GetKey("s"))
-		{
-			z = z - speed;
-		}
+		position.z += speed;
 		
-		_move.SetPositionAndRotation(new Vector3(x, y, z), NowRot);
+		_move.SetPositionAndRotation(position, rotation);
+	}
+	
+	
+	private void MoveBackwards()
+	{
+		Vector3		position = transform.position;
+		Quaternion	rotation = transform.rotation;
+		
+		position.z -= speed;
+		
+		_move.SetPositionAndRotation(position, rotation);
 	}
 }
