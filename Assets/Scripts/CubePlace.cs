@@ -9,10 +9,13 @@ public class CubePlace : MonoBehaviour
 	public GameObject	cubes;		/* Ссылка на родительский объект для новых кубов */
 	public GameObject	pfCube;		/* Префаб для новых кубов */
 	
+	public static event Action CubeSpawn;
 	
 	private void Start()
 	{
 		_rend = GetComponent<Renderer> ();
+		
+		/* CubeSpawn?.Invoke(); */
 		
 		GameController.leftMouseButtonDown	+= Spawn;
 		GameController.cursorOnPlane		+= Show;
@@ -38,6 +41,7 @@ public class CubePlace : MonoBehaviour
 		if (_rend.isVisible && _canBuild)
 		{
 			Instantiate(pfCube, transform.position, Quaternion.identity, cubes.transform);
+			CubeSpawn();
 		}
 	}
 	
